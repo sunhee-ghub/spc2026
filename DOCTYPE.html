@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>강의실 좌석 배치도</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .seat-container {
+            width: 100%;
+            aspect-ratio: 1.8 / 1;
+            position: relative;
+        }
+        .seat {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .seat.occupied {
+            background-color: #fefce8;
+            border-color: #eab308;
+            color: #854d0e;
+            border-width: 2px;
+        }
+        .seat.instructor-seat {
+            background-color: #eff6ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+            border-style: dashed;
+            aspect-ratio: 2.5 / 1;
+            width: 160px;
+        }
+        .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #64748b;
+            text-align: center;
+            margin-bottom: 12px;
+            background: #f1f5f9;
+            padding: 4px 0;
+            border-radius: 4px;
+        }
+        .seat-number {
+            font-size: 10px;
+            color: #cbd5e1;
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+        .occupied .seat-number {
+            color: #eab308;
+        }
+        .seat-placeholder {
+            width: 100%;
+            aspect-ratio: 1.8 / 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen p-4 md:p-8 font-sans text-slate-800">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-2xl font-bold tracking-tight">강의실 좌석 배치 시스템</h1>
+        </header>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- 사이드바 -->
+            <div class="lg:w-64 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 shrink-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="font-bold text-sm">학생 명단 (<span id="waitlist-count">0</span>)</h2>
+                    <button onclick="resetAll()" class="text-[10px] text-red-500 hover:underline">초기화</button>
+                </div>
+                <div id="student-list" class="flex flex-wrap gap-1.5 lg:flex-col overflow-y-auto max-h-[60vh] pr-1"></div>
+                <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                    <button onclick="randomShuffle()" class="w-full py-3 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 shadow-md transition">
+                        미배치 학생 랜덤 배치
+                    </button>
+                    <button onclick="exportMap()" class="w-full py-3 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-200 transition">
+                        배치 텍스트 복사
+                    </button>
+                </div>
+            </div>
+
+            <!-- 메인 맵 구역 -->
+            <div class="flex-grow">
+                <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-slate-200 relative">
+                    
+                    <!-- 앞쪽 (강사님 위치: 오른쪽 앞) -->
+                    <div class="mb-16">
+                        <div class="flex justify-center mb-8">
+                            <div class="w-1/2 py-3 bg-slate-800 text-white text-center font-bold rounded-b-xl shadow-lg uppercase tracking-[0.3em] text-xs">
+                                SCREEN / FRONT
+                            </div>
+                        </div>
+                        <div class="flex justify-end pr-4 md:pr-10">
+                            <div class="flex flex-col items-center">
+                                <div class="text-[10px] font-bold text-blue-400 mb-2 uppercase tracking-tighter">Instructor's Position</div>
+                                <div id="seat-instructor" class="seat instructor-seat shadow-sm cursor-pointer hover:border-blue-500 transition-all">
+                                    <span id="instructor-name" class="font-bold text-blue-700">강사님</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 좌석 배치 레이아웃 -->
+                    <div class="flex justify-between items-start gap-6">
+                        
+                        <!-- 왼쪽 섹션 (2열) -->
+                        <div class="flex-1">
+                            <div class="section-title">LEFT</div>
+                            <div class="grid grid-cols-2 gap-3" id="grid-left"></div>
+                        </div>
+
+                        <!-- 중앙 섹션 (3열) -->
+                        <div class="flex-[1.5]">
+                            <div class="section-title">CENTER</div>
+                            <div class="grid grid-cols-3 gap-3" id="grid-center"></div>
+                        </div>
+
+                        <!-- 오른쪽 섹션 (2열) -->
+                        <div class="flex-1">
+                            <div class="section-title">RIGHT</div>
+                            <div class="grid grid-cols-2 gap-3" id="grid-right"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="mt-20 flex justify-center">
+                        <div class="px-10 py-2 bg-slate-50 text-slate-300 text-[10px] font-black tracking-[1.5em] rounded-full border border-slate-100 uppercase">
+                            REAR
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 bg-slate-900 text-white rounded-full opacity-0 transition-opacity pointer-events-none shadow-2xl text-xs z-50"></div>
+
+    <script>
+        /**
+         * 행 단위 (Row-based) 정밀 번호 매핑
+         * 중앙 3행 3열 중 한 자리가 사라진 구조를 반영하여 번호를 재매핑합니다.
+         */
+        const seatSpecs = {
+            left: [
+                {r:0, c:0, num:1},  {r:0, c:1, num:2},
+                {r:1, c:0, num:5},  {r:1, c:1, num:6},
+                {r:2, c:0, num:11}, {r:2, c:1, num:12},
+                {r:3, c:0, num:17}, {r:3, c:1, num:18},
+                {r:4, c:0, num:24}, {r:4, c:1, num:25}
+            ],
+            center: [
+                {r:0, c:0, num:3},  {r:0, c:1, num:4},  {r:0, c:2, active:false}, 
+                {r:1, c:0, num:7},  {r:1, c:1, num:8},  {r:1, c:2, num:9},
+                {r:2, c:0, num:13}, {r:2, c:1, num:14}, {r:2, c:2, num:15},
+                {r:3, c:0, num:19}, {r:3, c:1, num:20}, {r:3, c:2, num:21},
+                {r:4, c:0, num:26}, {r:4, c:1, num:27}, {r:4, c:2, num:28}
+            ],
+            right: [
+                {r:0, c:0, active:false}, {r:0, c:1, active:false}, 
+                {r:1, c:0, active:false}, {r:1, c:1, num:10},
+                {r:2, c:0, active:false}, {r:2, c:1, num:16},       
+                {r:3, c:0, num:22},       {r:3, c:1, num:23},
+                {r:4, c:0, num:29},       {r:4, c:1, num:30}
+            ]
+        };
+
+        const initialStudents = [
+            "조윤", "조은결", "이춘우", "최준호", "이서우", "권태현", "김성호",
+            "김민정(A)", "박지우", "박은빈", "황동건", "한혜경", "진미경", "박상우", "조용민",
+            "이상욱", "유지산", "김민정(B)", "이종혁", "김유선", "원가희", "신혜진",
+            "심정호", "이태경", "김선희", "한은태", "박초롱", "박준하", "채란", "이민지"
+        ];
+
+        let seatMap = {}; 
+        let selectedStudent = null;
+        let instructorName = "강사님";
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+        }
+
+        function init() {
+            renderStudents();
+            renderGrids();
+            setupInstructor();
+        }
+
+        function renderStudents() {
+            const list = document.getElementById('student-list');
+            list.innerHTML = '';
+            const placed = Object.values(seatMap);
+            const unplaced = initialStudents.filter(name => !placed.includes(name) && name !== instructorName);
+            document.getElementById('waitlist-count').innerText = unplaced.length;
+
+            unplaced.forEach(name => {
+                const btn = document.createElement('button');
+                btn.className = `px-3 py-2 bg-white border border-slate-200 rounded-lg text-[11px] text-left transition-all hover:border-indigo-400 ${selectedStudent === name ? 'ring-2 ring-indigo-500 border-transparent bg-indigo-50 font-bold text-indigo-700' : 'text-slate-600'}`;
+                btn.innerText = name;
+                btn.onclick = () => {
+                    selectedStudent = (selectedStudent === name) ? null : name;
+                    renderStudents();
+                };
+                list.appendChild(btn);
+            });
+        }
+
+        function setupInstructor() {
+            const instBtn = document.getElementById('seat-instructor');
+            instBtn.onclick = () => {
+                if (selectedStudent) {
+                    instructorName = selectedStudent;
+                    selectedStudent = null;
+                    document.getElementById('instructor-name').innerText = instructorName;
+                    renderStudents();
+                } else if (instructorName !== "강사님") {
+                    const current = instructorName;
+                    instructorName = "강사님";
+                    document.getElementById('instructor-name').innerText = instructorName;
+                    selectedStudent = current;
+                    renderStudents();
+                }
+            };
+        }
+
+        function createSeat(spec) {
+            const container = document.createElement('div');
+            container.className = 'seat-container';
+
+            if (spec.active === false) {
+                container.className = 'seat-placeholder';
+                return container;
+            }
+
+            const num = spec.num;
+            const student = seatMap[num];
+            const div = document.createElement('div');
+            div.className = `seat shadow-sm relative cursor-pointer ${student ? 'occupied' : 'hover:bg-slate-50'}`;
+            div.innerHTML = `<span class="seat-number">${num}</span>`;
+            
+            if (student) {
+                div.innerHTML += `
+                    <span class="font-bold truncate w-full text-center px-1 z-10">${student}</span>
+                    <button onclick="removeStudent(${num}, event)" class="absolute -top-1 -right-1 bg-white rounded-full shadow-md text-slate-300 hover:text-red-500 z-20">
+                        <svg class="w-4 h-4 p-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                `;
+            }
+
+            div.onclick = () => placeStudent(num);
+            container.appendChild(div);
+            return container;
+        }
+
+        function renderGrids() {
+            ['left', 'center', 'right'].forEach(secId => {
+                const el = document.getElementById(`grid-${secId}`);
+                el.innerHTML = '';
+                seatSpecs[secId].forEach(spec => {
+                    el.appendChild(createSeat(spec));
+                });
+            });
+        }
+
+        function placeStudent(num) {
+            if (selectedStudent) {
+                if (seatMap[num]) { showToast("이미 자리가 찼습니다."); return; }
+                seatMap[num] = selectedStudent;
+                selectedStudent = null;
+                renderStudents();
+                renderGrids();
+            } else if (seatMap[num]) {
+                const name = seatMap[num];
+                delete seatMap[num];
+                selectedStudent = name;
+                renderStudents();
+                renderGrids();
+            }
+        }
+
+        function removeStudent(num, e) {
+            e.stopPropagation();
+            delete seatMap[num];
+            renderStudents();
+            renderGrids();
+        }
+
+        function randomShuffle() {
+            const placed = Object.values(seatMap);
+            const unplaced = initialStudents.filter(name => !placed.includes(name) && name !== instructorName);
+            const allEmptyNums = [];
+            Object.values(seatSpecs).flat().forEach(s => {
+                if (s.num && !seatMap[s.num]) allEmptyNums.push(s.num);
+            });
+            if (unplaced.length === 0) { showToast("배치할 학생이 없습니다."); return; }
+            unplaced.sort(() => Math.random() - 0.5);
+            allEmptyNums.forEach((num, i) => { if (unplaced[i]) seatMap[num] = unplaced[i]; });
+            renderStudents();
+            renderGrids();
+            showToast("랜덤 배치가 완료되었습니다.");
+        }
+
+        function resetAll() {
+            if (confirm("배치도를 초기화하시겠습니까?")) {
+                seatMap = {};
+                instructorName = "강사님";
+                document.getElementById('instructor-name').innerText = instructorName;
+                selectedStudent = null;
+                renderStudents();
+                renderGrids();
+            }
+        }
+
+        function exportMap() {
+            let text = `=== 강의실 좌석 배치 결과 ===\n[강사석]: ${instructorName}\n`;
+            let allResults = [];
+            Object.values(seatSpecs).flat().forEach(s => {
+                if(s.num) allResults.push({num: s.num, name: seatMap[s.num] || "빈자리"});
+            });
+            allResults.sort((a, b) => a.num - b.num);
+            allResults.forEach(r => text += `${r.num}번: ${r.name}\n`);
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text; dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            showToast("결과가 복사되었습니다.");
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
