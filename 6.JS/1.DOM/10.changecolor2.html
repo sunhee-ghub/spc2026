@@ -10,11 +10,12 @@
     <button onclick="changeColor()">색상 변경</button>
     <script>
         // 버튼을 누를 때마다 red -> blue -> green -> red ...
-        const colors = ['red', 'blue', 'green']
+        const colors = ['red', 'blue', 'green', 'orange', 'yellow']
         let index = 0;
+
         function changeColor() {
             // 배열의 인덱스를 이용하여 로직을 구현
-            document.body.style.backgroundColor = colors[index++];
+            document.body.style.backgroundColor = colors[index];
             // if (index > 2) {
             //    index=0;
             // }

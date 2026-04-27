@@ -11,12 +11,12 @@
     <script>
         function changeColor() {
             // 랜덤으로 색상을 변경할 것임, rgb #------ red 0 ~ 255, green 0 ~ 255, blue 0 ~ 255
-            // Math.random() : 바닥, 내림, 반올림, 올림 (floor, round)
+            // Math.random() : 0 이상 1 미만의 랜덤 실수/(floor(소수점 내림), celi(소수점 올림), round(반올림), trunc(소수점 제거(정수 유지)))
             
-            // 0 ~ 255 
-            const r = Math.floor(Math.random() * 256);   // 2자리가 나와야함
-            const g = Math.floor(Math.random() * 256);   // 2자리가 나와야함
-            const b = Math.floor(Math.random() * 256);   // 2자리가 나와야함
+            // 0 ~ 255 까지의 값 구하기
+            const r = Math.floor(Math.random() * 256); // 2자리가 나와야함
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
 
             // hex 로 바꾸기
             const rHex = r.toString(16).padStart(2,0);
