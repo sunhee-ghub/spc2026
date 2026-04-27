@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 id="text">색상 변경 버튼</h1>
+    <button onclick="changeColor()">색상 변경</button>
+    <script>
+        function changeColor() {
+            // 랜덤으로 색상을 변경할 것임, rgb #------ red 0 ~ 255, green 0 ~ 255, blue 0 ~ 255
+            // Math.random() : 바닥, 내림, 반올림, 올림 (floor, round)
+            
+            // 0 ~ 255 
+            const r = Math.floor(Math.random() * 256);   // 2자리가 나와야함
+            const g = Math.floor(Math.random() * 256);   // 2자리가 나와야함
+            const b = Math.floor(Math.random() * 256);   // 2자리가 나와야함
+
+            // hex 로 바꾸기
+            const rHex = r.toString(16).padStart(2,0);
+            const gHex = g.toString(16).padStart(2,0);
+            const bHex = b.toString(16).padStart(2,0);
+
+            const finalColor = '#' + rHex + gHex + bHex;
+            console.log(finalColor);
+            // 방법이 여러개
+            // '#${rHex}{gHex}{bHex}'
+            // 'rgba(${r}, ${g}, ${b}, 0.5)'
+
+            document.body.style.backgroundColor = finalColor;
+    }
+    </script>
+</body>
+</html>
