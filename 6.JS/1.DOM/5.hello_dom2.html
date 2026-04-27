@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>나의 헤딩</h1>
+    <p>여기는 나의 문장이 있는 곳</p>
+    <div id="output"><!-- 여기가 동적으로 컨텐츠를 채울 곳 --></div>
+    <P class="text">여기는 나의 두번째 문장이 있는 곳</P>
+    <button onclick="sayHello4()">여기는 나의 버튼</button>
+    <script>
+        function sayHello() {
+            console.log('sayhello');
+            const myoutput = document.getElementById('output');
+            // myoutput.write('글자써보기');
+            console.log(myoutput);
+            myoutput.textContent = '나의 새로운 동적 문장'
+        }
+        sayHello();
+            function sayHello2() {
+            console.log('sayhello');
+            const myoutput = document.getElementsByTagName('div');
+            console.log(myoutput[0]);
+            myoutput[0].textContent = '나의 새로운 동적 문장2'
+        }
+        function sayHello3() {
+            // get elements <-- 복수형임을 기억할 것
+            // 복수형은 리스트가 반환됨 (그걸 전문용어로 HTMLCollection 이라는 자료구조에 )
+            console.log('sayhello');
+            const myoutput = document.getElementsByTagName('p');
+            console.log(myoutput[0]); // 해당 DOM들의(즉 해당 p들의) 첫번째 멤버
+            console.log(myoutput[1]); // 두번째 멤버/요소(element)
+            myoutput[0].textContent = '나의 새로운 동적 문장2'
+        }
+        function sayHello4() {
+            // get elements <-- 복수형임을 기억할 것
+            // 복수형은 리스트가 반환됨 (그걸 전문용어로 HTMLCollection 이라는 자료구조에 )
+            console.log('sayhello');
+            const myoutput = document.getElementsByClassName('text');
+            console.log(myoutput);
+            console.log(myoutput[0]); // 해당 DOM들의(즉 해당 p들의) 첫번째 멤버
+            console.log(myoutput[1]); // 두번째 멤버/요소(element)
+            myoutput[0].textContent = '나의 새로운 동적 문장2'
+        }
+    </script>
+</body>
+</html>
