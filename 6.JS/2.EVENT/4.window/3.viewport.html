@@ -19,8 +19,8 @@
     <div id="sizeInfo"></div>
     <script>
         function updatewindowInfo() {
-            const width = window.innerWidth;
-            const height = window.innerHeight;
+            const innerWidth = window.innerWidth;
+            const innerHeight = window.innerHeight;
             
             const outerWidth = window.outerWidth;  
             const outerHeight = window.outerHeight;
@@ -38,12 +38,13 @@
                 Height: ${outerHeight} px <br><br>
                 <strong>화면 해상도</strong>
                 Width: ${screenWidth} px <br>
-                Height: ${screenHeight} px <br><br>`
+                Height: ${screenHeight} px`
         };
 
         window.addEventListener('load', () => {  // 타이밍 이슈 (타이밍 버그)
             setTimeout(updatewindowInfo, 50);  // 50ms 딜레이를 통해서 브라우저의 랜더리가 올바르게 초기화 된 이후에 계산
-        })
+        });
+        // updateWindowInfo(); // 화면 최초 로딩시에 표시하기 위해서 1회 수동 호출
 
         window.addEventListener('resize', updatewindowInfo);
     </script>

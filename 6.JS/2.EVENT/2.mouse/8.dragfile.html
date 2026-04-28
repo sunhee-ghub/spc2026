@@ -40,15 +40,15 @@
         });
 
         // 파일이 놓았을 때
-        dropZone.addEventListener('drag', (ev) => {
+        dropZone.addEventListener('drop', (ev) => {
             ev.preventDefault();
-            dropZone.style.backgroundColor = '#6bgg6b';
+            dropZone.style.backgroundColor = '#6b6b6b';
 
             const files = ev.dataTransfer.files;
             // console.log(files);
 
             if (files.length > 0) {
-                // for (let i = 0; 1 < file.length; i++){
+                // for (let i = 0; i < filess.length; i++){
                 //     const li = document.createElement(li);
                 //     li.textContent = files[i].name;
                 //     fileNames.appendChild(li);
@@ -63,8 +63,8 @@
                 
                 // 리스트를 풀어해치는 스프레드 연산자(...)로 풀었다가 [] 리스트로 묶음
                 [...files].forEach(file => {
-                    const li = document.createElement(li);
-                    li.textContent = files[i].name;
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
                     fileNames.appendChild(li);
                 })
             }

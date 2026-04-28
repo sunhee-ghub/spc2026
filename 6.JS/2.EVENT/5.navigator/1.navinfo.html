@@ -11,9 +11,9 @@
     <p>Language: <span id="language"></span></p>
     <p>인터넷 연결상태: <span id="onlinestatus"></span></p>
     <script>
-        document.getElementById('userAgent').textContent
-        document.getElementById('language').textContent
-        document.getElementById('onlinestatus').textContent
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('language').textContent = navigator.language;
+        document.getElementById('onlinestatus').textContent = navigator.onLine;
     </script>
 </body>
 </html>

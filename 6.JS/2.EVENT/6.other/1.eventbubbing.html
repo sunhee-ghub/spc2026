@@ -32,16 +32,17 @@
     <script>
         // 이벤트 버블링: 나의 이벤트가 부모 요소에게 전달되는 현상
 
-        // 1. 캡처링: window -> document -> html -> body -> outer -> 
-        // 2. 
+        // 1. 캡처링: window → document → html → body → outer → inner → target
+        // 2. 타겟: target
+        // 3. 버블링: target → inner → outer → body → html → document → window
         document.addEventListener('DOMContentLoaded', () => {
             const child = document.getElementById('child');
             const parent = document.getElementById('parent');
             const grandparent = document.getElementById('grandparent');
 
-            child.addEventListener('click', () => {
+            child.addEventListener('click', (ev) => {
                 alert('Child 클릭됨');
-                mev.stopPropagation(); // 이벤트 버블링이 일어나지 않도록 중지
+                ev.stopPropagation(); // 이벤트 버블링이 일어나지 않도록 중지
             });
 
             parent.addEventListener('click', () => {
