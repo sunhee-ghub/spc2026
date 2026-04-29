@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input {
+            padding: 10px;
+            font-size: 16px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>실시간 검색 필터</h1>
+    <input type="text" id="searchInput" placeholder="검색어">
+    <ul id="itemsList">
+        <li>Apple</li>
+        <li>Banana</li>
+        <li>Orange</li>
+        <li>Grape</li>
+        <li>Strawberry</li>
+        <li>Blueberry</li>
+        <li>Watermelon</li>
+        <li>Peach</li>
+        <li>Pear</li>
+        <li>Pineapple</li>
+        <li>Mango</li>
+        <li>Cherry</li>
+        <li>Kiwi</li>
+        <li>Lemon</li>
+        <li>Lime</li>
+        <li>Plum</li>
+        <li>Apricot</li>
+        <li>Pomegranate</li>
+        <li>Coconut</li>
+        <li>Avocado</li>
+    </ul>
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const items = document.querySelectorAll('#itemsList > li'); // NodeList 타입
+
+        searchInput.addEventListener('keyup', () => {
+            // 필터링 구현
+            const filter = searchInput.value.toLowerCase();
+
+            items.forEach((item) => {
+                item.style.display = 
+                    item.textContent.toLowerCase().includes(filter) ?  '' : 'none';
+            })
+        })
+
+        // 디바운스를 구현하기 (setTimeout을 통해서...)
+    </script>
+</body>
+</html>
