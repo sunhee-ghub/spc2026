@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chart.js Line Example</title>
+</head>
+
+<body>
+    <div>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // 📊 라벨 (Utils.months 대신 직접 사용)
+        const labels = [
+            '1월', '2월', '3월', '4월', '5월', '6월',
+            '7월', '8월', '9월', '10월', '11월', '12월'
+        ];
+
+        // 📈 데이터 설정 (라인 그래프용)
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'My First Dataset',
+                data: [65, 59, 80, 81, 56, 55, 40],
+
+                // 🎨 선 색상
+                borderColor: 'rgb(75, 192, 192)',
+
+                // ✨ 선 아래 채우기 여부 (false = 안 채움)
+                fill: false,
+
+                // 📉 선 부드럽게 (0~1)
+                tension: 0.1
+            },
+            {
+                label: 'My second Dataset',
+                data: [75, 69, 70, 91, 66, 45, 40],
+
+                // 🎨 선 색상
+                borderColor: 'rgb(75, 192, 192)',
+
+                // ✨ 선 아래 채우기 여부 (false = 안 채움)
+                fill: false,
+
+                // 📉 선 부드럽게 (0~1)
+                tension: 0.1
+            }]
+        };
+
+        // ⚙️ 차트 설정 (bar → line으로 변경)
+        const config = {
+            type: 'line',   // 📈 라인 그래프
+            data: data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        // 🚀 차트 생성
+        new Chart(document.getElementById('myChart'), config);
+    </script>
+</body>
+
+</html>
